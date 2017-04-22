@@ -1,8 +1,10 @@
 #! /usr/bin/env node
 
-var chalk = require('chalk')
-var embed = require('./index')
-var minimist = require('minimist')
+var fs = require('fs');
+
+var chalk = require('chalk');
+var inlinePictures = require('./index');
+var minimist = require('minimist');
 
 var argv = minimist(process.argv.slice(2), {
   alias: {
@@ -38,4 +40,30 @@ else embed(input)
 
 function error (message) {
   console.log('[' + chalk.red('error') + '] ' + message)
+}
+
+function embed (input, output, cb) {
+  fs.readFile(input, function (err, data) {
+    if (err && cb) return cb(err)
+    var original = String(data)
+
+    inlinePictures(original).then ((converted)=>{
+
+      if (output) {
+        fs.writeFile(output, converted, function (err, data) {
+          if (err && cb){
+            return cb(err)
+          }
+          if (cb) {
+            return cb()
+          }
+        });
+      }
+
+      else {
+        console.log(converted);
+      }
+    })
+
+  })
 }

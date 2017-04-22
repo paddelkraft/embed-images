@@ -5,7 +5,9 @@
 
 > embed image files in markdown as base64
 
-Takes a markdown file with images referenced by file and embeds the image content as `base64`. Useful if you want to render standalone markdown files without serving or hosting individual image files. Currently only handles `png` files.
+Takes a markdown file with local images referenced by file and embeds the image content as `base64`.
+Useful if you want to render standalone markdown files without serving or hosting individual image
+files.
 
 ## install
 
@@ -28,7 +30,7 @@ If you have a file `example.md` with
 ```markdown
 # this is a markdown file with an image
 
-![png](example.png)
+![](example.png)
 ```
 
 And call
@@ -47,13 +49,13 @@ You'll get
 
 ## use as a module
 
-Just provide filenames for input and output and an optional callback.
 
 ```javascript
-require('embed-images')(input, output, cb)
+require('embed-images')(markdown).then(result=>{
+    console.log(result);
+});
 ```
 
-If you don't specify an output the result will be logged to stdout.
 
 ## use as a cli
 
@@ -63,7 +65,7 @@ Just specify an input and pipe to stdout
 embed-images input.md > output.md
 ```
 
-Or specify an output file
+specify an output file
 
 ```bash
 embed-images input.md -o output.md

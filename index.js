@@ -1,23 +1,26 @@
-var fs = require('fs')
+imageDataURI = require('image-data-uri');
 
-module.exports = function (input, output, cb) {
-  fs.readFile(input, function (err, data) {
-    if (err && cb) return cb(err)
-    var original = String(data)
-    var converted = String(data)
-    original.split('\n').forEach(function (line) {
-      if (line.indexOf('![png]') === 0) {
-        var file = line.slice(7, line.length - 1)
-        var im = fs.readFileSync(file)
-        var src = 'data:image/png;base64,' + im.toString('base64')
-        var insert = '<img src="' + src + '" />'
-        converted = converted.replace(line, insert)
-      }
-    })
-    if (output) fs.writeFile(output, converted, function (err, data) {
-      if (err && cb) return cb(err)
-      if (cb) return cb()
-    })
-    else console.log(converted)
-  })
+
+function inlinePictures(markdown){
+  const regex = /!\[.*?\]\((.*?)\)/gi;
+  const images = markdown.match(regex)||[];
+  let promises = [];
+  images.forEach((match)=>{
+    let parts = [];
+  parts.push(match.match(/^!\[.*?\]/gi));
+  parts.push(match.match(/\]\((.*?)\)$/gi));
+  let href = parts[1][0].substring(2, parts[1][0].length - 1);
+  promises.push(imageDataURI.encodeFromFile(href).then(datauri=>{
+    markdown = markdown.replace(match,parts[0]+"("+datauri+")");
+},err=>{
+    //console.log("Not inlined: "+ match);
+  }))});
+
+  return new Promise((resolve,reject)=>{
+        Promise.all(promises).then(()=>{
+        resolve(markdown);
+})
+});
 }
+
+module.exports = inlinePictures;

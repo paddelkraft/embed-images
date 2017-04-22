@@ -1,0 +1,6 @@
+Not inlined: ![](pic.png)
+Not inlined: ![](pic.jpg)
+Not inlined: ![](www.google.com/logo.png)
+![](pic.png)
+![](pic.jpg)
+![](www.google.com/logo.png)
